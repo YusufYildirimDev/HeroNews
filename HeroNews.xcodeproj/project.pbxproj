@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		F96E52282EEACC8100C9AEF8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E52272EEACC8100C9AEF8 /* AppDelegate.swift */; };
 		F96E522A2EEACC8100C9AEF8 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E52292EEACC8100C9AEF8 /* SceneDelegate.swift */; };
-		F96E522C2EEACC8100C9AEF8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E522B2EEACC8100C9AEF8 /* ViewController.swift */; };
 		F96E522F2EEACC8100C9AEF8 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = F96E522E2EEACC8100C9AEF8 /* Base */; };
 		F96E52322EEACC8100C9AEF8 /* HeroNews.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F96E52302EEACC8100C9AEF8 /* HeroNews.xcdatamodeld */; };
 		F96E52342EEACC8500C9AEF8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F96E52332EEACC8500C9AEF8 /* Assets.xcassets */; };
@@ -17,6 +16,10 @@
 		F96E52422EEACC8500C9AEF8 /* HeroNewsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E52412EEACC8500C9AEF8 /* HeroNewsTests.swift */; };
 		F96E524C2EEACC8500C9AEF8 /* HeroNewsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E524B2EEACC8500C9AEF8 /* HeroNewsUITests.swift */; };
 		F96E524E2EEACC8500C9AEF8 /* HeroNewsUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E524D2EEACC8500C9AEF8 /* HeroNewsUITestsLaunchTests.swift */; };
+		F96E52642EEAD4A700C9AEF8 /* News.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E52632EEAD4A700C9AEF8 /* News.swift */; };
+		F96E52662EEAD4D700C9AEF8 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E52652EEAD4D700C9AEF8 /* NetworkError.swift */; };
+		F96E52682EEAD50200C9AEF8 /* NewsEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E52672EEAD50200C9AEF8 /* NewsEndpoint.swift */; };
+		F96E526A2EEAD53B00C9AEF8 /* NewsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E52692EEAD53B00C9AEF8 /* NewsService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,7 +43,6 @@
 		F96E52242EEACC8100C9AEF8 /* HeroNews.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HeroNews.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F96E52272EEACC8100C9AEF8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F96E52292EEACC8100C9AEF8 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		F96E522B2EEACC8100C9AEF8 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		F96E522E2EEACC8100C9AEF8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		F96E52312EEACC8100C9AEF8 /* HeroNews.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = HeroNews.xcdatamodel; sourceTree = "<group>"; };
 		F96E52332EEACC8500C9AEF8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -51,6 +53,10 @@
 		F96E52472EEACC8500C9AEF8 /* HeroNewsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HeroNewsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F96E524B2EEACC8500C9AEF8 /* HeroNewsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroNewsUITests.swift; sourceTree = "<group>"; };
 		F96E524D2EEACC8500C9AEF8 /* HeroNewsUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroNewsUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		F96E52632EEAD4A700C9AEF8 /* News.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = News.swift; sourceTree = "<group>"; };
+		F96E52652EEAD4D700C9AEF8 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
+		F96E52672EEAD50200C9AEF8 /* NewsEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsEndpoint.swift; sourceTree = "<group>"; };
+		F96E52692EEAD53B00C9AEF8 /* NewsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,12 +107,13 @@
 		F96E52262EEACC8100C9AEF8 /* HeroNews */ = {
 			isa = PBXGroup;
 			children = (
-				F96E52272EEACC8100C9AEF8 /* AppDelegate.swift */,
-				F96E52292EEACC8100C9AEF8 /* SceneDelegate.swift */,
-				F96E522B2EEACC8100C9AEF8 /* ViewController.swift */,
-				F96E522D2EEACC8100C9AEF8 /* Main.storyboard */,
-				F96E52332EEACC8500C9AEF8 /* Assets.xcassets */,
-				F96E52352EEACC8500C9AEF8 /* LaunchScreen.storyboard */,
+				F96E52622EEAD04300C9AEF8 /* Resources */,
+				F96E525F2EEAD01100C9AEF8 /* Scenes */,
+				F96E525E2EEAD00100C9AEF8 /* Models */,
+				F96E525D2EEACFF100C9AEF8 /* Managers */,
+				F96E525C2EEACFE000C9AEF8 /* Networking */,
+				F96E525B2EEACFD700C9AEF8 /* Core */,
+				F96E525A2EEACF7100C9AEF8 /* App */,
 				F96E52382EEACC8500C9AEF8 /* Info.plist */,
 				F96E52302EEACC8100C9AEF8 /* HeroNews.xcdatamodeld */,
 			);
@@ -128,6 +135,80 @@
 				F96E524D2EEACC8500C9AEF8 /* HeroNewsUITestsLaunchTests.swift */,
 			);
 			path = HeroNewsUITests;
+			sourceTree = "<group>";
+		};
+		F96E525A2EEACF7100C9AEF8 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				F96E52272EEACC8100C9AEF8 /* AppDelegate.swift */,
+				F96E52292EEACC8100C9AEF8 /* SceneDelegate.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		F96E525B2EEACFD700C9AEF8 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		F96E525C2EEACFE000C9AEF8 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				F96E52652EEAD4D700C9AEF8 /* NetworkError.swift */,
+				F96E52672EEAD50200C9AEF8 /* NewsEndpoint.swift */,
+				F96E52692EEAD53B00C9AEF8 /* NewsService.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		F96E525D2EEACFF100C9AEF8 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		F96E525E2EEAD00100C9AEF8 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F96E52632EEAD4A700C9AEF8 /* News.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F96E525F2EEAD01100C9AEF8 /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				F96E52612EEAD02B00C9AEF8 /* NewsDetail */,
+				F96E52602EEAD02400C9AEF8 /* NewsList */,
+			);
+			path = Scenes;
+			sourceTree = "<group>";
+		};
+		F96E52602EEAD02400C9AEF8 /* NewsList */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = NewsList;
+			sourceTree = "<group>";
+		};
+		F96E52612EEAD02B00C9AEF8 /* NewsDetail */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = NewsDetail;
+			sourceTree = "<group>";
+		};
+		F96E52622EEAD04300C9AEF8 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F96E522D2EEACC8100C9AEF8 /* Main.storyboard */,
+				F96E52352EEACC8500C9AEF8 /* LaunchScreen.storyboard */,
+				F96E52332EEACC8500C9AEF8 /* Assets.xcassets */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -262,9 +343,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				F96E52322EEACC8100C9AEF8 /* HeroNews.xcdatamodeld in Sources */,
-				F96E522C2EEACC8100C9AEF8 /* ViewController.swift in Sources */,
 				F96E52282EEACC8100C9AEF8 /* AppDelegate.swift in Sources */,
+				F96E52642EEAD4A700C9AEF8 /* News.swift in Sources */,
+				F96E526A2EEAD53B00C9AEF8 /* NewsService.swift in Sources */,
+				F96E52682EEAD50200C9AEF8 /* NewsEndpoint.swift in Sources */,
 				F96E522A2EEACC8100C9AEF8 /* SceneDelegate.swift in Sources */,
+				F96E52662EEAD4D700C9AEF8 /* NetworkError.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
