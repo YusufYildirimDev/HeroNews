@@ -20,6 +20,7 @@
 		F96E52662EEAD4D700C9AEF8 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E52652EEAD4D700C9AEF8 /* NetworkError.swift */; };
 		F96E52682EEAD50200C9AEF8 /* NewsEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E52672EEAD50200C9AEF8 /* NewsEndpoint.swift */; };
 		F96E526A2EEAD53B00C9AEF8 /* NewsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E52692EEAD53B00C9AEF8 /* NewsService.swift */; };
+		F96E526C2EEAEF9700C9AEF8 /* NewsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E526B2EEAEF9700C9AEF8 /* NewsListViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		F96E52652EEAD4D700C9AEF8 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		F96E52672EEAD50200C9AEF8 /* NewsEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsEndpoint.swift; sourceTree = "<group>"; };
 		F96E52692EEAD53B00C9AEF8 /* NewsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsService.swift; sourceTree = "<group>"; };
+		F96E526B2EEAEF9700C9AEF8 /* NewsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,7 +116,6 @@
 				F96E525C2EEACFE000C9AEF8 /* Networking */,
 				F96E525B2EEACFD700C9AEF8 /* Core */,
 				F96E525A2EEACF7100C9AEF8 /* App */,
-				F96E52382EEACC8500C9AEF8 /* Info.plist */,
 				F96E52302EEACC8100C9AEF8 /* HeroNews.xcdatamodeld */,
 			);
 			path = HeroNews;
@@ -190,6 +191,7 @@
 		F96E52602EEAD02400C9AEF8 /* NewsList */ = {
 			isa = PBXGroup;
 			children = (
+				F96E526B2EEAEF9700C9AEF8 /* NewsListViewController.swift */,
 			);
 			path = NewsList;
 			sourceTree = "<group>";
@@ -204,6 +206,7 @@
 		F96E52622EEAD04300C9AEF8 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F96E52382EEACC8500C9AEF8 /* Info.plist */,
 				F96E522D2EEACC8100C9AEF8 /* Main.storyboard */,
 				F96E52352EEACC8500C9AEF8 /* LaunchScreen.storyboard */,
 				F96E52332EEACC8500C9AEF8 /* Assets.xcassets */,
@@ -349,6 +352,7 @@
 				F96E52682EEAD50200C9AEF8 /* NewsEndpoint.swift in Sources */,
 				F96E522A2EEACC8100C9AEF8 /* SceneDelegate.swift in Sources */,
 				F96E52662EEAD4D700C9AEF8 /* NetworkError.swift in Sources */,
+				F96E526C2EEAEF9700C9AEF8 /* NewsListViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -532,7 +536,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5A4A2VUMDM;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = HeroNews/Info.plist;
+				INFOPLIST_FILE = HeroNews/Resources/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -560,7 +564,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5A4A2VUMDM;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = HeroNews/Info.plist;
+				INFOPLIST_FILE = HeroNews/Resources/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
