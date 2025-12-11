@@ -9,42 +9,47 @@ import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
+    // MARK: - Properties
     var window: UIWindow?
 
+    // MARK: - Scene Lifecycle
+    func scene(_ scene: UIScene,
+               willConnectTo session: UISceneSession,
+               options connectionOptions: UIScene.ConnectionOptions) {
 
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // 1. Scene'i bir UIWindowScene olarak yakala (Eğer başarısız olursa dur)
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        
-        // 2. Bu scene'i kullanarak yeni bir UIWindow oluştur
+
+        // MARK: Create window
         let window = UIWindow(windowScene: windowScene)
-        
-        // 3. Main.storyboard dosyasını bul
+
+        // MARK: Load Initial View Controller from Storyboard
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        
-        // 4. Storyboard'daki "ok işaretiyle" gösterilen giriş (initial) sayfasını al
-        // NOT: Main.storyboard dosyasında bir View Controller'ın "Is Initial View Controller" seçeneğinin işaretli olduğundan emin olun.
         let initialViewController = storyboard.instantiateInitialViewController()
-        
-        // 5. Pencerenin ana görünümü olarak bu sayfayı ayarla
+
+        // MARK: Set Root Controller
         window.rootViewController = initialViewController
-        
-        // 6. Pencereyi belleğe al ve ekranda göster
         self.window = window
         window.makeKeyAndVisible()
     }
 
-    // Diğer fonksiyonlar (sceneDidDisconnect vb.) olduğu gibi kalabilir,
-    // onlarda değişiklik yapmanıza gerek yok.
-    
-    func sceneDidDisconnect(_ scene: UIScene) { }
-    func sceneDidBecomeActive(_ scene: UIScene) { }
-    func sceneWillResignActive(_ scene: UIScene) { }
-    func sceneWillEnterForeground(_ scene: UIScene) { }
-    func sceneDidEnterBackground(_ scene: UIScene) {
-        (UIApplication.shared.delegate as? AppDelegate)?.saveContext()
+    func sceneDidDisconnect(_ scene: UIScene) {
+        // Called when the scene is being released by the system.
     }
 
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        // Restart tasks paused when the scene was inactive.
+    }
 
+    func sceneWillResignActive(_ scene: UIScene) {
+        // Called when the app is about to move from active to inactive state.
+    }
+
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        // Called as the scene transitions from background to foreground.
+    }
+
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        // Save application data when moving to background.
+        (UIApplication.shared.delegate as? AppDelegate)?.saveContext()
+    }
 }
-
