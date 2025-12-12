@@ -27,7 +27,9 @@ extension NewsEndpoint {
 
     /// API Key loaded from Info.plist (Key: NEWS_API_KEY)
     private var apiKey: String {
-        Bundle.main.infoDictionary?["NEWS_API_KEY"] as? String ?? ""
+            let key = Bundle.main.infoDictionary?["NEWS_API_KEY"] as? String
+            return key?.isEmpty == false ? key! : "pub_29cfc1df7ae3416b8ea8f1ff7de9e195"
+
     }
 
     /// HTTP method used by the endpoint

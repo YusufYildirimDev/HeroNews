@@ -9,7 +9,6 @@ import UIKit
 
 extension UIViewController {
     
-    // Standart Hata Mesajı
     func showAlert(title: String, message: String, buttonTitle: String = "OK") {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }

@@ -1,5 +1,5 @@
 //
-//  News.swift
+//  NewsModels.swift
 //  HeroNews
 //
 //  Created by Yusuf Muhammet Yıldırım on 12/11/25.

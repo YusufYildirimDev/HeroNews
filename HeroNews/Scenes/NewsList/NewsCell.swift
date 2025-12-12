@@ -95,7 +95,6 @@ final class NewsCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        // Görsel reset
         newsImageView.image = UIImage(systemName: "photo")
         newsImageView.tintColor = .systemGray4
         newsImageView.contentMode = .scaleAspectFit

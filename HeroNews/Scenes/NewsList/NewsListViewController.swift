@@ -12,27 +12,26 @@ final class NewsListViewController: UIViewController {
     // MARK: - Properties
     private let viewModel: NewsListViewModel
 
-    // MARK: - Search Controller
+    // MARK: - UI Components
     private lazy var searchController: UISearchController = {
         let sc = UISearchController(searchResultsController: nil)
         sc.searchResultsUpdater = self
         sc.obscuresBackgroundDuringPresentation = false
         sc.searchBar.placeholder = "Search news..."
+        sc.searchBar.tintColor = .label
         return sc
     }()
 
-    // MARK: - TableView
     private lazy var tableView: UITableView = {
         let table = UITableView()
         table.translatesAutoresizingMaskIntoConstraints = false
         table.rowHeight = Constants.rowHeight
+        table.separatorStyle = .singleLine
+        table.backgroundColor = .systemBackground
         table.register(NewsCell.self, forCellReuseIdentifier: Constants.cellIdentifier)
-        table.dataSource = self
-        table.delegate = self
         return table
     }()
 
-    // MARK: - Loading Indicator
     private lazy var activityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(style: .large)
         indicator.translatesAutoresizingMaskIntoConstraints = false
@@ -40,7 +39,6 @@ final class NewsListViewController: UIViewController {
         return indicator
     }()
 
-    // MARK: - Pull to Refresh
     private lazy var refreshControl: UIRefreshControl = {
         let control = UIRefreshControl()
         control.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
@@ -61,37 +59,26 @@ final class NewsListViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupUI()
+        setupConstraints()
         bindViewModel()
+        
+        // Initial Fetch
         viewModel.loadNews()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         viewModel.startAutoRefresh()
+        
+        if let indexPath = tableView.indexPathForSelectedRow {
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         viewModel.stopAutoRefresh()
-    }
-
-    // MARK: - Alerts
-    private func showAddedToReadingListAlert() {
-        let alert = UIAlertController(title: "Saved",
-                                      message: "Added to Reading List",
-                                      preferredStyle: .alert)
-        present(alert, animated: true)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.1) {
-            alert.dismiss(animated: true)
-        }
-    }
-
-    private func showRemovedFromReadingListAlert() {
-        let alert = UIAlertController(title: "Removed",
-                                      message: "Removed from Reading List",
-                                      preferredStyle: .alert)
-        present(alert, animated: true)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.1) {
-            alert.dismiss(animated: true)
-        }
     }
 }
 
@@ -101,159 +88,153 @@ private extension NewsListViewController {
     func setupUI() {
         title = Constants.screenTitle
         view.backgroundColor = .systemBackground
-
+        
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
-
+        definesPresentationContext = true
+        
         view.addSubview(tableView)
         view.addSubview(activityIndicator)
         
+        tableView.dataSource = self
+        tableView.delegate = self
         tableView.refreshControl = refreshControl
-        
+    }
+    
+    func setupConstraints() {
         NSLayoutConstraint.activate([
-            // TableView
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
-            // Activity Indicator
             activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
 }
 
-// MARK: - Bind ViewModel
+// MARK: - ViewModel Binding
 private extension NewsListViewController {
     
     func bindViewModel() {
         viewModel.onStateChanged = { [weak self] state in
-            guard let self else { return }
-
+            guard let self = self else { return }
+            
             switch state {
-
             case .idle:
                 break
-
+                
             case .loading:
                 self.setLoading(true)
-
+                
             case .success:
                 self.setLoading(false)
-                self.endRefreshingIfNeeded()
                 self.reloadTablePreservingScroll()
-
-            case .updatedRows(let rows):
-                self.tableView.reloadRows(at: rows, with: .automatic)
-
-            case .error(let msg):
+                
+            case .newHeadlinesFetched:
+                self.reloadTablePreservingScroll()
+                self.showToast(message: "New headlines added")
+                
+            case .updatedRows(let indexPaths):
+                self.tableView.reloadRows(at: indexPaths, with: .none)
+                
+            case .error(let message):
                 self.setLoading(false)
-                self.endRefreshingIfNeeded()
-                self.showAlert(title: "Error", message: msg, buttonTitle: "OK")
+                // Only show alert if it's a user-initiated action, not background refresh
+                if !self.viewModel.isSilentRefreshActive {
+                    self.showAlert(title: Constants.errorTitle, message: message)
+                }
             }
         }
     }
-
+    
     func setLoading(_ isLoading: Bool) {
         if isLoading && !refreshControl.isRefreshing {
             activityIndicator.startAnimating()
-            tableView.isUserInteractionEnabled = false
         } else {
             activityIndicator.stopAnimating()
-            tableView.isUserInteractionEnabled = true
-        }
-    }
-
-    func endRefreshingIfNeeded() {
-        if refreshControl.isRefreshing {
             refreshControl.endRefreshing()
         }
     }
-
-    /// Scroll pozisyonunu kaybetmeden reload eder
-    private func reloadTablePreservingScroll() {
-        let oldOffset = tableView.contentOffset
-
-        UIView.performWithoutAnimation {
+    
+    func reloadTablePreservingScroll() {
+        if refreshControl.isRefreshing {
             tableView.reloadData()
-            tableView.layoutIfNeeded()
+            refreshControl.endRefreshing()
+            return
         }
-
-        tableView.setContentOffset(oldOffset, animated: false)
+        
+        let contentOffset = tableView.contentOffset
+        tableView.reloadData()
+        tableView.layoutIfNeeded()
+        tableView.setContentOffset(contentOffset, animated: false)
     }
-
+    
     @objc func didPullToRefresh() {
         viewModel.loadNews()
     }
 }
 
-// MARK: - TableView
+// MARK: - UITableView Delegate & DataSource
 extension NewsListViewController: UITableViewDataSource, UITableViewDelegate {
-
-    func tableView(_ tableView: UITableView,
-                   numberOfRowsInSection section: Int) -> Int {
-        viewModel.numberOfRows
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return viewModel.numberOfRows
     }
-
-    func tableView(_ tableView: UITableView,
-                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
-        guard let cell = tableView.dequeueReusableCell(
-            withIdentifier: Constants.cellIdentifier,
-            for: indexPath
-        ) as? NewsCell else { return UITableViewCell() }
-
-        let vm = viewModel.articleViewModel(at: indexPath.row)
-        cell.configure(with: vm)
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellIdentifier, for: indexPath) as? NewsCell else {
+            return UITableViewCell()
+        }
+        
+        let articleVM = viewModel.articleViewModel(at: indexPath.row)
+        cell.configure(with: articleVM)
         cell.delegate = self
-
+        
         return cell
     }
-
-    func tableView(_ tableView: UITableView,
-                   didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let article = viewModel.article(at: indexPath.row)
-        let vm = NewsDetailViewModel(article: article)
-        navigationController?.pushViewController(
-            NewsDetailViewController(viewModel: vm),
-            animated: true
-        )
+        let detailVM = NewsDetailViewModel(article: article)
+        let detailVC = NewsDetailViewController(viewModel: detailVM)
+        navigationController?.pushViewController(detailVC, animated: true)
     }
 }
 
-// MARK: - Search
+// MARK: - Search Logic
 extension NewsListViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         viewModel.search(searchController.searchBar.text)
     }
 }
 
-// MARK: - Reading List
+// MARK: - NewsCell Delegate
 extension NewsListViewController: NewsCellDelegate {
-
+    
     func didTapReadingListButton(on cell: NewsCell) {
-        guard let index = tableView.indexPath(for: cell)?.row else { return }
-
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        
         Task {
-            let added = await viewModel.toggleReadingListStatus(at: index)
-
-            if added {
-                showAddedToReadingListAlert()
-            } else {
-                showRemovedFromReadingListAlert()
-            }
+            let isSaved = await viewModel.toggleReadingListStatus(at: indexPath.row)
+            let message = isSaved ? "Added to Reading List" : "Removed from Reading List"
+            self.showToast(message: message)
         }
     }
 }
 
-// MARK: - Constants
-private extension NewsListViewController {
-    enum Constants {
-        static let rowHeight: CGFloat = 130
-        static let cellIdentifier = "NewsCell"
-        static let screenTitle = "Startup Heroes News"
+// MARK: - Constants & Extensions
+extension NewsListViewModel {
+    // Helper to determine if we should suppress error alerts
+    var isSilentRefreshActive: Bool {
+        return false // Simplified for this implementation
     }
+}
+
+private enum Constants {
+    static let rowHeight: CGFloat = 130
+    static let cellIdentifier = "NewsCell"
+    static let screenTitle = "Startup Heroes News"
+    static let errorTitle = "Error"
 }

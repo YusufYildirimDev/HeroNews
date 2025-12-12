@@ -13,10 +13,8 @@
 		F96E52322EEACC8100C9AEF8 /* HeroNews.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F96E52302EEACC8100C9AEF8 /* HeroNews.xcdatamodeld */; };
 		F96E52342EEACC8500C9AEF8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F96E52332EEACC8500C9AEF8 /* Assets.xcassets */; };
 		F96E52372EEACC8500C9AEF8 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = F96E52362EEACC8500C9AEF8 /* Base */; };
-		F96E52422EEACC8500C9AEF8 /* HeroNewsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E52412EEACC8500C9AEF8 /* HeroNewsTests.swift */; };
 		F96E524C2EEACC8500C9AEF8 /* HeroNewsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E524B2EEACC8500C9AEF8 /* HeroNewsUITests.swift */; };
-		F96E524E2EEACC8500C9AEF8 /* HeroNewsUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E524D2EEACC8500C9AEF8 /* HeroNewsUITestsLaunchTests.swift */; };
-		F96E52642EEAD4A700C9AEF8 /* News.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E52632EEAD4A700C9AEF8 /* News.swift */; };
+		F96E52642EEAD4A700C9AEF8 /* NewsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E52632EEAD4A700C9AEF8 /* NewsModels.swift */; };
 		F96E52662EEAD4D700C9AEF8 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E52652EEAD4D700C9AEF8 /* NetworkError.swift */; };
 		F96E52682EEAD50200C9AEF8 /* NewsEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E52672EEAD50200C9AEF8 /* NewsEndpoint.swift */; };
 		F96E526A2EEAD53B00C9AEF8 /* NewsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E52692EEAD53B00C9AEF8 /* NewsService.swift */; };
@@ -31,6 +29,8 @@
 		F96E527C2EEB58DE00C9AEF8 /* UIViewController+Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E527B2EEB58DE00C9AEF8 /* UIViewController+Alert.swift */; };
 		F96E527E2EEB760800C9AEF8 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E527D2EEB760800C9AEF8 /* NetworkMonitor.swift */; };
 		F96E52802EEB9C1800C9AEF8 /* NewsDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E527F2EEB9C1800C9AEF8 /* NewsDetailViewModel.swift */; };
+		F96E52822EEC303700C9AEF8 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E52812EEC303700C9AEF8 /* Mocks.swift */; };
+		F96E52842EEC305500C9AEF8 /* NewsListViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96E52832EEC305500C9AEF8 /* NewsListViewModelTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,11 +60,9 @@
 		F96E52362EEACC8500C9AEF8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F96E52382EEACC8500C9AEF8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F96E523D2EEACC8500C9AEF8 /* HeroNewsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HeroNewsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F96E52412EEACC8500C9AEF8 /* HeroNewsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroNewsTests.swift; sourceTree = "<group>"; };
 		F96E52472EEACC8500C9AEF8 /* HeroNewsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HeroNewsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F96E524B2EEACC8500C9AEF8 /* HeroNewsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroNewsUITests.swift; sourceTree = "<group>"; };
-		F96E524D2EEACC8500C9AEF8 /* HeroNewsUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroNewsUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		F96E52632EEAD4A700C9AEF8 /* News.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = News.swift; sourceTree = "<group>"; };
+		F96E52632EEAD4A700C9AEF8 /* NewsModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsModels.swift; sourceTree = "<group>"; };
 		F96E52652EEAD4D700C9AEF8 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		F96E52672EEAD50200C9AEF8 /* NewsEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsEndpoint.swift; sourceTree = "<group>"; };
 		F96E52692EEAD53B00C9AEF8 /* NewsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsService.swift; sourceTree = "<group>"; };
@@ -79,6 +77,8 @@
 		F96E527B2EEB58DE00C9AEF8 /* UIViewController+Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Alert.swift"; sourceTree = "<group>"; };
 		F96E527D2EEB760800C9AEF8 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		F96E527F2EEB9C1800C9AEF8 /* NewsDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsDetailViewModel.swift; sourceTree = "<group>"; };
+		F96E52812EEC303700C9AEF8 /* Mocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
+		F96E52832EEC305500C9AEF8 /* NewsListViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListViewModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,7 +136,6 @@
 				F96E525C2EEACFE000C9AEF8 /* Networking */,
 				F96E525B2EEACFD700C9AEF8 /* Core */,
 				F96E525A2EEACF7100C9AEF8 /* App */,
-				F96E52302EEACC8100C9AEF8 /* HeroNews.xcdatamodeld */,
 			);
 			path = HeroNews;
 			sourceTree = "<group>";
@@ -144,7 +143,8 @@
 		F96E52402EEACC8500C9AEF8 /* HeroNewsTests */ = {
 			isa = PBXGroup;
 			children = (
-				F96E52412EEACC8500C9AEF8 /* HeroNewsTests.swift */,
+				F96E52812EEC303700C9AEF8 /* Mocks.swift */,
+				F96E52832EEC305500C9AEF8 /* NewsListViewModelTests.swift */,
 			);
 			path = HeroNewsTests;
 			sourceTree = "<group>";
@@ -153,7 +153,6 @@
 			isa = PBXGroup;
 			children = (
 				F96E524B2EEACC8500C9AEF8 /* HeroNewsUITests.swift */,
-				F96E524D2EEACC8500C9AEF8 /* HeroNewsUITestsLaunchTests.swift */,
 			);
 			path = HeroNewsUITests;
 			sourceTree = "<group>";
@@ -199,7 +198,7 @@
 		F96E525E2EEAD00100C9AEF8 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F96E52632EEAD4A700C9AEF8 /* News.swift */,
+				F96E52632EEAD4A700C9AEF8 /* NewsModels.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -236,6 +235,7 @@
 		F96E52622EEAD04300C9AEF8 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F96E52302EEACC8100C9AEF8 /* HeroNews.xcdatamodeld */,
 				F96E52382EEACC8500C9AEF8 /* Info.plist */,
 				F96E522D2EEACC8100C9AEF8 /* Main.storyboard */,
 				F96E52352EEACC8500C9AEF8 /* LaunchScreen.storyboard */,
@@ -379,7 +379,7 @@
 				F96E52322EEACC8100C9AEF8 /* HeroNews.xcdatamodeld in Sources */,
 				F96E52282EEACC8100C9AEF8 /* AppDelegate.swift in Sources */,
 				F96E527A2EEB4CD000C9AEF8 /* ArticleViewModel.swift in Sources */,
-				F96E52642EEAD4A700C9AEF8 /* News.swift in Sources */,
+				F96E52642EEAD4A700C9AEF8 /* NewsModels.swift in Sources */,
 				F96E526A2EEAD53B00C9AEF8 /* NewsService.swift in Sources */,
 				F96E52762EEB354D00C9AEF8 /* ReadingListManager.swift in Sources */,
 				F96E527C2EEB58DE00C9AEF8 /* UIViewController+Alert.swift in Sources */,
@@ -400,7 +400,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F96E52422EEACC8500C9AEF8 /* HeroNewsTests.swift in Sources */,
+				F96E52842EEC305500C9AEF8 /* NewsListViewModelTests.swift in Sources */,
+				F96E52822EEC303700C9AEF8 /* Mocks.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -408,7 +409,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F96E524E2EEACC8500C9AEF8 /* HeroNewsUITestsLaunchTests.swift in Sources */,
 				F96E524C2EEACC8500C9AEF8 /* HeroNewsUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -12,6 +12,7 @@ enum NewsListState {
     case idle
     case loading
     case success
+    case newHeadlinesFetched
     case updatedRows([IndexPath])
     case error(String)
 }
@@ -41,10 +42,31 @@ final class NewsListViewModel {
     ) {
         self.service = service
         self.readingManager = readingManager
+        setupNetworkObserver()
+    }
+    
+    // MARK: - Network Logic
+    private func setupNetworkObserver() {
+        NetworkMonitor.shared.onStatusChange = { [weak self] isConnected in
+            guard let self = self else { return }
+            if isConnected {
+                if self.allArticles.isEmpty {
+                    self.loadNews()
+                }
+                self.startAutoRefresh()
+            } else {
+                self.stopAutoRefresh()
+            }
+        }
     }
 
-    // MARK: - Load News
+    // MARK: - Load News (First Load or Manual Refresh)
     func loadNews() {
+        guard NetworkMonitor.shared.isConnected else {
+            notify(.error("No internet connection."))
+            return
+        }
+
         notify(.loading)
 
         Task {
@@ -55,20 +77,23 @@ final class NewsListViewModel {
                 let (articles, saved) = try await (articlesReq, savedReq)
 
                 self.allArticles = articles
-                self.filteredArticles = articles
                 self.savedArticleIDs = Set(saved.map { $0.id })
-
+                
+                if !self.isSearching {
+                    self.filteredArticles = articles
+                }
                 notify(.success)
-
             } catch {
                 notify(.error(error.localizedDescription))
             }
         }
     }
 
-    // MARK: - Auto Refresh
+    // MARK: - Auto Refresh Logic
     func startAutoRefresh() {
         stopAutoRefresh()
+        guard NetworkMonitor.shared.isConnected else { return }
+        
         timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
             self?.silentRefresh()
         }
@@ -80,6 +105,8 @@ final class NewsListViewModel {
     }
 
     private func silentRefresh() {
+        guard !isSearching, NetworkMonitor.shared.isConnected else { return }
+        
         Task {
             do {
                 let newData = try await service.fetchHeadlines()
@@ -87,11 +114,9 @@ final class NewsListViewModel {
                 guard newData != allArticles else { return }
 
                 self.allArticles = newData
-                if !isSearching {
-                    filteredArticles = newData
-                }
+                self.filteredArticles = newData
 
-                notify(.success)
+                notify(.newHeadlinesFetched)
 
             } catch {
                 print("Silent refresh failed:", error)
@@ -101,11 +126,11 @@ final class NewsListViewModel {
 
     // MARK: - Table Helpers
     var numberOfRows: Int {
-        isSearching ? filteredArticles.count : allArticles.count
+        filteredArticles.count
     }
 
     func article(at index: Int) -> NewsArticle {
-        isSearching ? filteredArticles[index] : allArticles[index]
+        filteredArticles[index]
     }
 
     func articleViewModel(at index: Int) -> ArticleViewModel {
@@ -136,14 +161,15 @@ final class NewsListViewModel {
     }
 
     // MARK: - Reading List Toggle
+    /// Returns true if added, false if removed
     func toggleReadingListStatus(at index: Int) async -> Bool {
         let article = article(at: index)
         let id = article.id
+        
         let willSave = !savedArticleIDs.contains(id)
         if willSave {
             savedArticleIDs.insert(id)
-        }
-        else {
+        } else {
             savedArticleIDs.remove(id)
         }
 
