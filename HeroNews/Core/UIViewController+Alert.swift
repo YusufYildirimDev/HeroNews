@@ -9,19 +9,38 @@ import UIKit
 
 extension UIViewController {
     
-    /// Simple reusable alert presenter for the whole app.
-    func showAlert(
-        title: String,
-        message: String,
-        buttonTitle: String = "OK"
-    ) {
-        let alert = UIAlertController(
-            title: title,
-            message: message,
-            preferredStyle: .alert
-        )
-        
+    // Standart Hata Mesajı
+    func showAlert(title: String, message: String, buttonTitle: String = "OK") {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            
+            if let presented = self.presentedViewController {
+                if presented is UIAlertController {
+                    presented.dismiss(animated: false) {
+                        self.presentNewAlert(title: title, message: message, buttonTitle: buttonTitle)
+                    }
+                }
+                return
+            }
+            
+            self.presentNewAlert(title: title, message: message, buttonTitle: buttonTitle)
+        }
+    }
+   
+    func showToast(message: String) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+            self.present(alert, animated: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                alert.dismiss(animated: true)
+            }
+        }
+    }
+    
+    private func presentNewAlert(title: String, message: String, buttonTitle: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: buttonTitle, style: .default))
-        present(alert, animated: true)
+        self.present(alert, animated: true)
     }
 }

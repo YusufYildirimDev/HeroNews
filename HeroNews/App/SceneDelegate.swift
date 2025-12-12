@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     // MARK: - Properties
     var window: UIWindow?
@@ -17,25 +17,47 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                willConnectTo session: UISceneSession,
                options connectionOptions: UIScene.ConnectionOptions) {
 
-        guard let windowScene = (scene as? UIWindowScene) else { return }
+        guard let windowScene = scene as? UIWindowScene else {
+            assertionFailure("Failed to cast scene to UIWindowScene")
+            return
+        }
 
-        // MARK: Create window
+        // MARK: Window Setup
         let window = UIWindow(windowScene: windowScene)
+        window.backgroundColor = .systemBackground
 
-        // MARK: Load Initial View Controller from Storyboard
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let initialViewController = storyboard.instantiateInitialViewController()
-
-        // MARK: Set Root Controller
-        window.rootViewController = initialViewController
-        self.window = window
+        // MARK: Build Root Scene
+        let rootVC = buildRootViewController()
+        window.rootViewController = rootVC
         window.makeKeyAndVisible()
+
+        self.window = window
     }
 
-    func sceneDidDisconnect(_ scene: UIScene) {
-        // Called when the scene is being released by the system.
+    // MARK: - Build Root
+    /// Builds the entire root navigation structure.
+    private func buildRootViewController() -> UIViewController {
+
+        // Dependencies (Injection)
+        let service = NewsService()
+        let readingManager = ReadingListManager.shared
+        
+        let viewModel = NewsListViewModel(
+            service: service,
+            readingManager: readingManager
+        )
+
+        let listVC = NewsListViewController(viewModel: viewModel)
+
+        // Navigation Controller Setup
+        let navigation = UINavigationController(rootViewController: listVC)
+        navigation.navigationBar.prefersLargeTitles = true
+        navigation.navigationBar.tintColor = .label
+
+        return navigation
     }
 
+    // MARK: - Scene State Handlers
     func sceneDidBecomeActive(_ scene: UIScene) {
         // Restart tasks paused when the scene was inactive.
     }

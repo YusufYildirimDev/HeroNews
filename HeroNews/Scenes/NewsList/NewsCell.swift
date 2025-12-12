@@ -42,6 +42,7 @@ final class NewsCell: UITableViewCell {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.font = .systemFont(ofSize: 15, weight: .bold)
         $0.numberOfLines = 2
+        $0.textColor = .label
     }
     
     private let descriptionLabel = UILabel().apply {
@@ -51,10 +52,20 @@ final class NewsCell: UITableViewCell {
         $0.numberOfLines = 2
     }
     
+    /// Explicit creator/author label (required by case)
+    private let creatorLabel = UILabel().apply {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.font = .systemFont(ofSize: 11, weight: .semibold)
+        $0.textColor = .label
+        $0.numberOfLines = 1
+    }
+    
+    /// Shows only date text (e.g. "3 hours ago")
     private let metaLabel = UILabel().apply {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.font = .systemFont(ofSize: 11, weight: .medium)
         $0.textColor = .systemGray
+        $0.numberOfLines = 1
     }
     
     private let readingListButton: UIButton = {
@@ -91,6 +102,7 @@ final class NewsCell: UITableViewCell {
         
         titleLabel.text = nil
         descriptionLabel.text = nil
+        creatorLabel.text = nil
         metaLabel.text = nil
         
         currentImageURL = nil
@@ -102,28 +114,30 @@ final class NewsCell: UITableViewCell {
     
     // MARK: - Configure
     func configure(with vm: ArticleViewModel) {
-            titleLabel.text = vm.title
-            descriptionLabel.text = vm.summary
-            metaLabel.text = vm.meta
-            updateButtonState(isSaved: vm.isSaved)
+        titleLabel.text = vm.title
+        descriptionLabel.text = vm.summary
+        creatorLabel.text = vm.creator
+        metaLabel.text = vm.dateText
+        
+        updateButtonState(isSaved: vm.isSaved)
+        
+        guard let url = vm.imageURL else { return }
+        currentImageURL = url
+        
+        downloadTask = Task { [weak self] in
+            guard let self = self else { return }
             
-            guard let url = vm.imageURL else { return }
-            currentImageURL = url
-            
-            downloadTask = Task { [weak self] in
-                guard let self = self else { return }
-                
-                if let image = await ImageLoader.shared.downloadImage(url: url),
-                   self.currentImageURL == url {
-                    await MainActor.run {
-                        self.newsImageView.image = image
-                        self.newsImageView.tintColor = nil
-                        self.newsImageView.contentMode = .scaleAspectFill
-                    }
+            if let image = await ImageLoader.shared.downloadImage(url: url),
+               self.currentImageURL == url {
+                await MainActor.run {
+                    self.newsImageView.image = image
+                    self.newsImageView.tintColor = nil
+                    self.newsImageView.contentMode = .scaleAspectFill
                 }
             }
         }
     }
+}
 
 // MARK: - UI Setup
 private extension NewsCell {
@@ -135,6 +149,7 @@ private extension NewsCell {
             newsImageView,
             titleLabel,
             descriptionLabel,
+            creatorLabel,
             metaLabel,
             readingListButton
         )
@@ -161,16 +176,22 @@ private extension NewsCell {
             descriptionLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             descriptionLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
             
-            // Button
+            // Reading List Button
             readingListButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Metrics.padding),
             readingListButton.bottomAnchor.constraint(equalTo: newsImageView.bottomAnchor),
             readingListButton.widthAnchor.constraint(equalToConstant: Metrics.buttonSize),
             readingListButton.heightAnchor.constraint(equalToConstant: Metrics.buttonSize),
             
-            // Meta
-            metaLabel.centerYAnchor.constraint(equalTo: readingListButton.centerYAnchor),
+            // Creator
+            creatorLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 4),
+            creatorLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
+            creatorLabel.trailingAnchor.constraint(lessThanOrEqualTo: readingListButton.leadingAnchor, constant: -8),
+            
+            // Meta (date)
+            metaLabel.topAnchor.constraint(equalTo: creatorLabel.bottomAnchor, constant: 2),
             metaLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            metaLabel.trailingAnchor.constraint(lessThanOrEqualTo: readingListButton.leadingAnchor, constant: -8)
+            metaLabel.trailingAnchor.constraint(lessThanOrEqualTo: readingListButton.leadingAnchor, constant: -8),
+            metaLabel.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -Metrics.padding)
         ])
     }
     

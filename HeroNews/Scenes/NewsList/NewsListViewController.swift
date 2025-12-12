@@ -185,6 +185,11 @@ extension NewsListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView,
                    didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+
+        let article = viewModel.article(at: indexPath.row)
+        let detailVM = NewsDetailViewModel(article: article)
+        let detailVC = NewsDetailViewController(viewModel: detailVM)
+        navigationController?.pushViewController(detailVC, animated: true)
     }
 }
 

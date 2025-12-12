@@ -12,33 +12,44 @@ struct ArticleViewModel {
     // MARK: - UI Ready Properties
     let title: String
     let summary: String
+
+    /// Explicit creator/author text (required by case)
+    let creator: String
+
+    /// Human readable date text (e.g. "3 hours ago")
+    let dateText: String?
+
+    /// Combined meta text (creator • date) – still usable if needed
     let meta: String
+
     let imageURL: URL?
     let isSaved: Bool
     let article: NewsArticle
 
+    // MARK: - Init
     init(article: NewsArticle, isSaved: Bool) {
         self.article = article
         self.isSaved = isSaved
         self.title = article.title
         self.summary = article.summary
         self.imageURL = article.imageURL
-        self.meta = ArticleViewModel.buildMeta(from: article)
-    }
-}
 
-private extension ArticleViewModel {
-
-    static func buildMeta(from article: NewsArticle) -> String {
-        let author = resolveAuthor(article)
+        let author = ArticleViewModel.resolveAuthor(article)
+        self.creator = author
 
         if let date = article.publishedAt {
             let relative = date.timeAgoDisplay()
-            return "\(author) \(Constants.separator) \(relative)"
+            self.dateText = relative
+            self.meta = "\(author) \(Constants.separator) \(relative)"
+        } else {
+            self.dateText = nil
+            self.meta = author
         }
-
-        return author
     }
+}
+
+// MARK: - Helpers
+private extension ArticleViewModel {
 
     static func resolveAuthor(_ article: NewsArticle) -> String {
         // 1) Authors list → trimmed & non-empty
@@ -48,7 +59,7 @@ private extension ArticleViewModel {
             return first
         }
 
-        // 2) Source → trimmed & non-empty (source zaten String!)
+        // 2) Source → trimmed & non-empty
         let trimmedSource = article.source.trimmingCharacters(in: .whitespacesAndNewlines)
         if !trimmedSource.isEmpty {
             return trimmedSource
