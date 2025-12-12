@@ -18,15 +18,15 @@ enum NewsListState {
 
 final class NewsListViewModel {
 
-    // MARK: - Full Data Sets
+    // MARK: - Data Sources
     private var allArticles: [NewsArticle] = []
     private var filteredArticles: [NewsArticle] = []
     private var isSearching = false
 
-    // MARK: - Persisted Saved Articles
+    // MARK: - Saved Reading Items
     private var savedArticleIDs: Set<UUID> = []
 
-    // MARK: - External Bind Target
+    // MARK: - Output
     var onStateChanged: ((NewsListState) -> Void)?
 
     // MARK: - Dependencies
@@ -49,16 +49,17 @@ final class NewsListViewModel {
 
         Task {
             do {
-                async let articlesRequest = service.fetchHeadlines()
-                async let savedListRequest = readingManager.getReadingList()
+                async let articlesReq = service.fetchHeadlines()
+                async let savedReq = readingManager.getReadingList()
 
-                let (fetched, savedList) = try await (articlesRequest, savedListRequest)
+                let (articles, saved) = try await (articlesReq, savedReq)
 
-                self.allArticles = fetched
-                self.filteredArticles = fetched
-                self.savedArticleIDs = Set(savedList.map { $0.id })
+                self.allArticles = articles
+                self.filteredArticles = articles
+                self.savedArticleIDs = Set(saved.map { $0.id })
 
                 notify(.success)
+
             } catch {
                 notify(.error(error.localizedDescription))
             }
@@ -69,7 +70,7 @@ final class NewsListViewModel {
     func startAutoRefresh() {
         stopAutoRefresh()
         timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
-            self?.refreshSilently()
+            self?.silentRefresh()
         }
     }
 
@@ -78,17 +79,22 @@ final class NewsListViewModel {
         timer = nil
     }
 
-    private func refreshSilently() {
+    private func silentRefresh() {
         Task {
             do {
                 let newData = try await service.fetchHeadlines()
-                if newData != allArticles {
-                    self.allArticles = newData
-                    self.filteredArticles = newData
-                    notify(.success)
+
+                guard newData != allArticles else { return }
+
+                self.allArticles = newData
+                if !isSearching {
+                    filteredArticles = newData
                 }
+
+                notify(.success)
+
             } catch {
-                print("Silent refresh failed: \(error)")
+                print("Silent refresh failed:", error)
             }
         }
     }
@@ -108,7 +114,7 @@ final class NewsListViewModel {
         return ArticleViewModel(article: article, isSaved: isSaved)
     }
 
-    // MARK: - Search Logic
+    // MARK: - Search Feature
     func search(_ query: String?) {
         guard let q = query, !q.isEmpty else {
             isSearching = false
@@ -129,29 +135,30 @@ final class NewsListViewModel {
         notify(.success)
     }
 
-    // MARK: - Reading List
-    func toggleReadingListStatus(at index: Int) {
+    // MARK: - Reading List Toggle
+    func toggleReadingListStatus(at index: Int) async -> Bool {
         let article = article(at: index)
         let id = article.id
-
-        if savedArticleIDs.contains(id) {
-            savedArticleIDs.remove(id)
-        } else {
+        let willSave = !savedArticleIDs.contains(id)
+        if willSave {
             savedArticleIDs.insert(id)
+        }
+        else {
+            savedArticleIDs.remove(id)
         }
 
         notify(.updatedRows([IndexPath(row: index, section: 0)]))
 
-        Task {
-            if await readingManager.isArticleSaved(id: id) {
-                await readingManager.removeFromReadingList(article)
-            } else {
-                await readingManager.addToReadingList(article)
-            }
+        if willSave {
+            await readingManager.addToReadingList(article)
+        } 
+        else {
+            await readingManager.removeFromReadingList(article)
         }
+        return willSave
     }
 
-    // MARK: - State Notify
+    // MARK: - Notify Helper
     private func notify(_ state: NewsListState) {
         DispatchQueue.main.async { [weak self] in
             self?.onStateChanged?(state)

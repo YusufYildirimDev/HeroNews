@@ -31,22 +31,23 @@ final class NewsListViewController: UIViewController {
         table.delegate = self
         return table
     }()
-    
-    // MARK: - Loading UI
+
+    // MARK: - Loading Indicator
     private lazy var activityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(style: .large)
         indicator.translatesAutoresizingMaskIntoConstraints = false
         indicator.hidesWhenStopped = true
         return indicator
     }()
-    
+
+    // MARK: - Pull to Refresh
     private lazy var refreshControl: UIRefreshControl = {
         let control = UIRefreshControl()
         control.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
         return control
     }()
-    
-    // MARK: - Initializers
+
+    // MARK: - Init
     init(viewModel: NewsListViewModel = NewsListViewModel()) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -70,6 +71,27 @@ final class NewsListViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         viewModel.stopAutoRefresh()
+    }
+
+    // MARK: - Alerts
+    private func showAddedToReadingListAlert() {
+        let alert = UIAlertController(title: "Saved",
+                                      message: "Added to Reading List",
+                                      preferredStyle: .alert)
+        present(alert, animated: true)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.1) {
+            alert.dismiss(animated: true)
+        }
+    }
+
+    private func showRemovedFromReadingListAlert() {
+        let alert = UIAlertController(title: "Removed",
+                                      message: "Removed from Reading List",
+                                      preferredStyle: .alert)
+        present(alert, animated: true)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.1) {
+            alert.dismiss(animated: true)
+        }
     }
 }
 
@@ -102,24 +124,25 @@ private extension NewsListViewController {
     }
 }
 
-// MARK: - ViewModel Binding
+// MARK: - Bind ViewModel
 private extension NewsListViewController {
     
     func bindViewModel() {
         viewModel.onStateChanged = { [weak self] state in
-            guard let self = self else { return }
-            
+            guard let self else { return }
+
             switch state {
+
             case .idle:
                 break
-                
+
             case .loading:
                 self.setLoading(true)
-                
+
             case .success:
                 self.setLoading(false)
                 self.endRefreshingIfNeeded()
-                self.animateReload()
+                self.reloadTablePreservingScroll()
 
             case .updatedRows(let rows):
                 self.tableView.reloadRows(at: rows, with: .automatic)
@@ -131,9 +154,8 @@ private extension NewsListViewController {
             }
         }
     }
-    
+
     func setLoading(_ isLoading: Bool) {
-       
         if isLoading && !refreshControl.isRefreshing {
             activityIndicator.startAnimating()
             tableView.isUserInteractionEnabled = false
@@ -142,36 +164,41 @@ private extension NewsListViewController {
             tableView.isUserInteractionEnabled = true
         }
     }
-    
+
     func endRefreshingIfNeeded() {
         if refreshControl.isRefreshing {
             refreshControl.endRefreshing()
         }
     }
 
-    func animateReload() {
-        UIView.transition(with: tableView,
-                          duration: 0.25,
-                          options: .transitionCrossDissolve,
-                          animations: { self.tableView.reloadData() })
+    /// Scroll pozisyonunu kaybetmeden reload eder
+    private func reloadTablePreservingScroll() {
+        let oldOffset = tableView.contentOffset
+
+        UIView.performWithoutAnimation {
+            tableView.reloadData()
+            tableView.layoutIfNeeded()
+        }
+
+        tableView.setContentOffset(oldOffset, animated: false)
     }
-    
+
     @objc func didPullToRefresh() {
         viewModel.loadNews()
     }
 }
 
-// MARK: - TableView Delegate & DataSource
+// MARK: - TableView
 extension NewsListViewController: UITableViewDataSource, UITableViewDelegate {
-    
+
     func tableView(_ tableView: UITableView,
                    numberOfRowsInSection section: Int) -> Int {
         viewModel.numberOfRows
     }
-    
+
     func tableView(_ tableView: UITableView,
                    cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
+
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: Constants.cellIdentifier,
             for: indexPath
@@ -180,10 +207,10 @@ extension NewsListViewController: UITableViewDataSource, UITableViewDelegate {
         let vm = viewModel.articleViewModel(at: indexPath.row)
         cell.configure(with: vm)
         cell.delegate = self
-        
+
         return cell
     }
-    
+
     func tableView(_ tableView: UITableView,
                    didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
@@ -197,19 +224,28 @@ extension NewsListViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
-// MARK: - Search Updates
+// MARK: - Search
 extension NewsListViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         viewModel.search(searchController.searchBar.text)
     }
 }
 
-// MARK: - Reading List Button (From Cell)
+// MARK: - Reading List
 extension NewsListViewController: NewsCellDelegate {
-    
+
     func didTapReadingListButton(on cell: NewsCell) {
         guard let index = tableView.indexPath(for: cell)?.row else { return }
-        viewModel.toggleReadingListStatus(at: index)
+
+        Task {
+            let added = await viewModel.toggleReadingListStatus(at: index)
+
+            if added {
+                showAddedToReadingListAlert()
+            } else {
+                showRemovedFromReadingListAlert()
+            }
+        }
     }
 }
 
