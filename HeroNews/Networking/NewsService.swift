@@ -12,6 +12,8 @@ protocol NewsServiceProtocol {
     func fetchHeadlines() async throws -> [NewsArticle]
 }
 
+/// Responsible for all network operations.
+/// Utilizes native URLSession and handles decoding of NewsResponseDTO.
 // MARK: - News Service Implementation
 final class NewsService: NewsServiceProtocol {
 

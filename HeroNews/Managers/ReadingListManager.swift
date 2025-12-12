@@ -15,6 +15,8 @@ protocol ReadingListManagerProtocol {
     func getReadingList() async -> [NewsArticle]
 }
 
+/// Thread-safe manager for persisting favorite articles.
+/// Implemented as an 'actor' to prevent data races during concurrent access.
 // MARK: - Actor Implementation (Thread-safe)
 actor ReadingListManager: ReadingListManagerProtocol {
 

@@ -17,6 +17,8 @@ enum NewsListState {
     case error(String)
 }
 
+/// Manages the state of the News List screen.
+/// Handles data fetching, search filtering, and auto-refresh logic.
 final class NewsListViewModel {
 
     // MARK: - Data Sources
