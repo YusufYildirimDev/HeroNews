@@ -18,11 +18,15 @@ enum NewsListState {
 
 final class NewsListViewModel {
 
-    // MARK: - Public Properties
-    private(set) var articles: [NewsArticle] = []
-    
+    // MARK: - Full Data Sets
+    private var allArticles: [NewsArticle] = []
+    private var filteredArticles: [NewsArticle] = []
+    private var isSearching = false
+
+    // MARK: - Persisted Saved Articles
     private var savedArticleIDs: Set<UUID> = []
-    
+
+    // MARK: - External Bind Target
     var onStateChanged: ((NewsListState) -> Void)?
 
     // MARK: - Dependencies
@@ -47,12 +51,13 @@ final class NewsListViewModel {
             do {
                 async let articlesRequest = service.fetchHeadlines()
                 async let savedListRequest = readingManager.getReadingList()
-                
-                let (fetchedArticles, savedList) = try await (articlesRequest, savedListRequest)
-                
-                self.articles = fetchedArticles
+
+                let (fetched, savedList) = try await (articlesRequest, savedListRequest)
+
+                self.allArticles = fetched
+                self.filteredArticles = fetched
                 self.savedArticleIDs = Set(savedList.map { $0.id })
-                
+
                 notify(.success)
             } catch {
                 notify(.error(error.localizedDescription))
@@ -77,8 +82,9 @@ final class NewsListViewModel {
         Task {
             do {
                 let newData = try await service.fetchHeadlines()
-                if newData != self.articles {
-                    self.articles = newData
+                if newData != allArticles {
+                    self.allArticles = newData
+                    self.filteredArticles = newData
                     notify(.success)
                 }
             } catch {
@@ -87,24 +93,45 @@ final class NewsListViewModel {
         }
     }
 
-    // MARK: - Helpers
+    // MARK: - Table Helpers
     var numberOfRows: Int {
-        articles.count
+        isSearching ? filteredArticles.count : allArticles.count
     }
 
     func article(at index: Int) -> NewsArticle {
-        articles[index]
+        isSearching ? filteredArticles[index] : allArticles[index]
     }
 
     func articleViewModel(at index: Int) -> ArticleViewModel {
-        let article = articles[index]
+        let article = article(at: index)
         let isSaved = savedArticleIDs.contains(article.id)
         return ArticleViewModel(article: article, isSaved: isSaved)
     }
 
-    // MARK: - Reading List Actions
+    // MARK: - Search Logic
+    func search(_ query: String?) {
+        guard let q = query, !q.isEmpty else {
+            isSearching = false
+            filteredArticles = allArticles
+            notify(.success)
+            return
+        }
+
+        isSearching = true
+        let lower = q.lowercased()
+
+        filteredArticles = allArticles.filter {
+            $0.title.lowercased().contains(lower) ||
+            $0.summary.lowercased().contains(lower) ||
+            $0.source.lowercased().contains(lower)
+        }
+
+        notify(.success)
+    }
+
+    // MARK: - Reading List
     func toggleReadingListStatus(at index: Int) {
-        let article = articles[index]
+        let article = article(at: index)
         let id = article.id
 
         if savedArticleIDs.contains(id) {
@@ -112,9 +139,8 @@ final class NewsListViewModel {
         } else {
             savedArticleIDs.insert(id)
         }
-        
-        let indexPath = IndexPath(row: index, section: 0)
-        notify(.updatedRows([indexPath]))
+
+        notify(.updatedRows([IndexPath(row: index, section: 0)]))
 
         Task {
             if await readingManager.isArticleSaved(id: id) {
@@ -125,6 +151,7 @@ final class NewsListViewModel {
         }
     }
 
+    // MARK: - State Notify
     private func notify(_ state: NewsListState) {
         DispatchQueue.main.async { [weak self] in
             self?.onStateChanged?(state)

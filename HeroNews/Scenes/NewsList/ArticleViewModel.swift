@@ -40,7 +40,7 @@ struct ArticleViewModel {
         if let date = article.publishedAt {
             let relative = date.timeAgoDisplay()
             self.dateText = relative
-            self.meta = "\(author) \(Constants.separator) \(relative)"
+            self.meta = "\(author) • \(relative)"
         } else {
             self.dateText = nil
             self.meta = author
@@ -59,18 +59,7 @@ private extension ArticleViewModel {
             return first
         }
 
-        // 2) Source → trimmed & non-empty
-        let trimmedSource = article.source.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !trimmedSource.isEmpty {
-            return trimmedSource
-        }
-
-        // 3) Fallback
-        return Constants.unknownAuthor
-    }
-
-    enum Constants {
-        static let separator = "•"
-        static let unknownAuthor = "Unknown Author"
+        let trimmed = article.source.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? "Unknown Author" : trimmed
     }
 }

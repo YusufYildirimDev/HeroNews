@@ -11,20 +11,28 @@ final class NewsListViewController: UIViewController {
     
     // MARK: - Properties
     private let viewModel: NewsListViewModel
-    
-    // MARK: - UI Components
+
+    // MARK: - Search Controller
+    private lazy var searchController: UISearchController = {
+        let sc = UISearchController(searchResultsController: nil)
+        sc.searchResultsUpdater = self
+        sc.obscuresBackgroundDuringPresentation = false
+        sc.searchBar.placeholder = "Search news..."
+        return sc
+    }()
+
+    // MARK: - TableView
     private lazy var tableView: UITableView = {
         let table = UITableView()
         table.translatesAutoresizingMaskIntoConstraints = false
         table.rowHeight = Constants.rowHeight
-        table.separatorStyle = .singleLine
-        table.backgroundColor = .systemBackground
         table.register(NewsCell.self, forCellReuseIdentifier: Constants.cellIdentifier)
         table.dataSource = self
         table.delegate = self
         return table
     }()
     
+    // MARK: - Loading UI
     private lazy var activityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(style: .large)
         indicator.translatesAutoresizingMaskIntoConstraints = false
@@ -71,7 +79,10 @@ private extension NewsListViewController {
     func setupUI() {
         title = Constants.screenTitle
         view.backgroundColor = .systemBackground
-        
+
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+
         view.addSubview(tableView)
         view.addSubview(activityIndicator)
         
@@ -108,19 +119,15 @@ private extension NewsListViewController {
             case .success:
                 self.setLoading(false)
                 self.endRefreshingIfNeeded()
-                self.reloadTableAnimated()
-                
-            case .updatedRows(let indexPaths):
+                self.animateReload()
+
+            case .updatedRows(let rows):
+                self.tableView.reloadRows(at: rows, with: .automatic)
+
+            case .error(let msg):
                 self.setLoading(false)
                 self.endRefreshingIfNeeded()
-                self.tableView.reloadRows(at: indexPaths, with: .automatic)
-                
-            case .error(let message):
-                self.setLoading(false)
-                self.endRefreshingIfNeeded()
-                self.showAlert(title: Constants.errorTitle,
-                               message: message,
-                               buttonTitle: Constants.okButton)
+                self.showAlert(title: "Error", message: msg, buttonTitle: "OK")
             }
         }
     }
@@ -141,15 +148,12 @@ private extension NewsListViewController {
             refreshControl.endRefreshing()
         }
     }
-    
-    func reloadTableAnimated() {
+
+    func animateReload() {
         UIView.transition(with: tableView,
                           duration: 0.25,
                           options: .transitionCrossDissolve,
-                          animations: { [weak self] in
-                              self?.tableView.reloadData()
-                          },
-                          completion: nil)
+                          animations: { self.tableView.reloadData() })
     }
     
     @objc func didPullToRefresh() {
@@ -157,7 +161,7 @@ private extension NewsListViewController {
     }
 }
 
-// MARK: - UITableViewDataSource & UITableViewDelegate
+// MARK: - TableView Delegate & DataSource
 extension NewsListViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView,
@@ -171,12 +175,10 @@ extension NewsListViewController: UITableViewDataSource, UITableViewDelegate {
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: Constants.cellIdentifier,
             for: indexPath
-        ) as? NewsCell else {
-            return UITableViewCell()
-        }
-        
-        let articleVM = viewModel.articleViewModel(at: indexPath.row)
-        cell.configure(with: articleVM)
+        ) as? NewsCell else { return UITableViewCell() }
+
+        let vm = viewModel.articleViewModel(at: indexPath.row)
+        cell.configure(with: vm)
         cell.delegate = self
         
         return cell
@@ -187,18 +189,27 @@ extension NewsListViewController: UITableViewDataSource, UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
 
         let article = viewModel.article(at: indexPath.row)
-        let detailVM = NewsDetailViewModel(article: article)
-        let detailVC = NewsDetailViewController(viewModel: detailVM)
-        navigationController?.pushViewController(detailVC, animated: true)
+        let vm = NewsDetailViewModel(article: article)
+        navigationController?.pushViewController(
+            NewsDetailViewController(viewModel: vm),
+            animated: true
+        )
     }
 }
 
-// MARK: - NewsCellDelegate
+// MARK: - Search Updates
+extension NewsListViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        viewModel.search(searchController.searchBar.text)
+    }
+}
+
+// MARK: - Reading List Button (From Cell)
 extension NewsListViewController: NewsCellDelegate {
     
     func didTapReadingListButton(on cell: NewsCell) {
-        guard let indexPath = tableView.indexPath(for: cell) else { return }
-        viewModel.toggleReadingListStatus(at: indexPath.row)
+        guard let index = tableView.indexPath(for: cell)?.row else { return }
+        viewModel.toggleReadingListStatus(at: index)
     }
 }
 
@@ -208,7 +219,5 @@ private extension NewsListViewController {
         static let rowHeight: CGFloat = 130
         static let cellIdentifier = "NewsCell"
         static let screenTitle = "Startup Heroes News"
-        static let errorTitle = "Error"
-        static let okButton = "OK"
     }
 }
